@@ -1,29 +1,32 @@
 import React, { useState } from 'react';
+import { connect } from 'react-redux';
+import { useFirestore } from 'react-redux-firebase';
+import Messages from './Messages';
 
-const App = props => {
+let App = props => {
+  const firestore = useFirestore();
 
-  const [message, setMessage] = useState("");
-  const [history, setHistory] = useState([]);
+  const [input, setInput] = useState("");
 
-  function handleFormSubmission(event) {
+  function addMessageToFirestore(event) {
     event.preventDefault();
-    setMessage("");
-    setHistory([...history, event.target.message.value]);
+    setInput("");
+    return firestore.collection('messages').add({
+      text: event.target.message.value,
+      timeStamp: firestore.FieldValue.serverTimestamp()
+    });
   }
-
   return(
     <React.Fragment>
-      <div className="chat">
-        {history.map(message => (
-          <p>{message}</p>
-        ))}
-      </div>
-      <form onSubmit={handleFormSubmission}>
-        <input type="text" name="message" value={message} onChange={event => setMessage(event.target.value)} />
+      <Messages />
+      <form onSubmit={addMessageToFirestore}>
+        <input type="text" name="message" value={input} onChange={event => setInput(event.target.value)} />
         <button>Send</button>
       </form>
     </React.Fragment>
   )
 }
+
+App = connect()(App);
 
 export default App;
