@@ -6,13 +6,14 @@ import { useSelector } from 'react-redux';
 
 const Messages = props => {
 
-  useFirestoreConnect([{ collection: 'messages' }]);
+  useFirestoreConnect([{ 
+    collection: 'messages',
+    orderBy: 'timeStamp' }]);
   const messages = useSelector(state => state.firestore.ordered.messages);
-
   if(isLoaded(messages)) {
     return(
       <React.Fragment>
-        {messages.orderBy("timeStamp").map((message, index) => <p key={index}>{message.text}</p>)}
+        {messages.map((message, index) => <p key={index}>{message.text}</p>)}
       </React.Fragment>
     );
   } else {
